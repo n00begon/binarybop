@@ -1,0 +1,29 @@
+{
+  "name": "BinaryBop",
+  "version": "1.0.0",
+  "description": "A Binary Music Game",
+  "scripts": {
+    "build:dev": "webpack --env dev",
+    "build:prod": "webpack --env prod",
+    "start": "webpack-dev-server -d --env dev",
+    "watch": "webpack --env dev --watch"
+  },
+  "author": "n00begon",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^9.6.18",
+    "@types/webpack": "^4.4.0",
+    "raw-loader": "^0.5.1",
+    "ts-loader": "^4.3.0",
+    "ts-node": "^5.0.1",
+    "typescript": "^2.8.3",
+    "webpack": "^4.8.3",
+    "webpack-cli": "^2.1.4",
+    "webpack-dev-server": "^3.1.4"
+  },
+  "dependencies": {
+    "copy-webpack-plugin": "^4.5.1",
+    "html-webpack-plugin": "^3.2.0",
+    "phaser": "^3.9.0"
+  }
+}
