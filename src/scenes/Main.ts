@@ -2,7 +2,7 @@ const maxBeat = 20;
 export class Main extends Phaser.Scene {
     beat = 0;
     keys!: Array<Phaser.Input.Keyboard.Key>;
-    letterCharacters = ['A', 'S', 'D', 'F', 'G', 'H', 'J'];
+    letterCharacters = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'A']; // change this to K when it's in spritesheet
     states = [State.Next, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait]
     music!: Phaser.Sound.BaseSound;
 
@@ -25,6 +25,7 @@ export class Main extends Phaser.Scene {
         this.keys[4] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G);
         this.keys[5] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H);
         this.keys[6] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
+        this.keys[7] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
         this.createAnimations();
         this.letterSprites = [];
         let x = 100;
