@@ -1,3 +1,74 @@
+import { GameObjects, Scene } from "phaser";
+
+class BeatManager {
+    static bpmToBeatDurationMillis(bpm:number):number {
+        const beatsPerSecond = bpm / 60;
+        const beatsPerMillisecond = beatsPerSecond / 1000;
+        const millisecondsPerBeat = 1 / beatsPerMillisecond;
+        return millisecondsPerBeat;
+    }
+
+    currentTime:number = 0 // milliseconds
+    millisecondsPerBeat:number = BeatManager.bpmToBeatDurationMillis(120)
+    offsetBeats:number = 0; // number of beats before the start of the song
+
+    start() {
+        this.currentTime = 0;
+    }
+    setBpm(bpm:number) {
+        this.millisecondsPerBeat = BeatManager.bpmToBeatDurationMillis(bpm);
+    }
+    update(delta:number) {
+        this.currentTime += delta;
+    }
+    /**
+     * @returns Floating point number of beats elapsed since start, 0-indexed.
+     */
+    getBeatsElapsed():number {
+        return (this.currentTime) / this.millisecondsPerBeat - this.offsetBeats;
+    }
+
+    /**
+     * @returns Detailed information about the current time as it relates to the beat.
+     */
+    getBeatInfo():BeatInfo {
+        const beatTime = this.getBeatsElapsed();
+        const nearestBeat = Math.round(beatTime);
+        const error = beatTime - nearestBeat;
+        
+        let assessment = error > 0 ? "late" : "early";
+        if (Math.abs(error) < 0.02) {
+            assessment = "perfect";
+        } else if (Math.abs(error) < 0.04) {
+            assessment = "great";
+        } else  if (Math.abs(error) < 0.06) {
+            assessment = "good";
+        } 
+
+        return {
+            beatTime,
+            nearestBeat,
+            error,
+            assessment
+        }
+    }
+}
+
+interface BeatInfo {
+    beatTime:number
+    nearestBeat:integer
+    
+    /** How far "off the mark" this time is compared to the nearest beat, as a proportion of a beat.
+      * Negative for early, positive for late.
+      */
+    error:number
+
+    /**
+     * An machine value for feedback that can be delivered to the player.
+     */
+    assessment: string
+}
+
 const maxBeat = 20;
 export class Main extends Phaser.Scene {
     beat = 0;
@@ -12,11 +83,19 @@ export class Main extends Phaser.Scene {
         super("main");
     }
 
+    beatwatcher:BeatManager = new BeatManager();
+
     create() {
+        this.sound.pauseOnBlur = false;
+        
         this.music = this.sound.add('bitbop');
-        if (!this.music.isPlaying) {
-            this.music.play();
-        }
+        this.beatwatcher.setBpm(110);
+        this.beatwatcher.offsetBeats = 8;
+
+        // init music
+        this.music.play();
+        this.beatwatcher.start();
+
         this.keys = [];
         this.keys[0] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keys[1] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
@@ -46,12 +125,14 @@ export class Main extends Phaser.Scene {
         return (i >>> 0).toString(2).split('').reverse();
     }
 
-    update() {
+    update(time: number, delta: number) {
         if (this.beat === 0) {
             for (let i = 0; i < this.keys.length; ++i) {
                 if (this.keys[i].isDown) {
                     if (this.states[i] === State.Next) {
                         this.increase();
+                        const info = this.beatwatcher.getBeatInfo();
+                        console.log(info.assessment, info.nearestBeat, (info.error*100).toFixed(1));
                     } else {
                         this.reset();
                     }
@@ -65,12 +146,16 @@ export class Main extends Phaser.Scene {
         } else {
             this.beat--;
         }
+
+        this.beatwatcher.update(delta);
+        
     }
 
     reset() {
         this.count = 0;
         this.music.stop();
         this.music.play();
+        this.beatwatcher.start();
         for (let i = 0; i < this.states.length; ++i) {
             this.states[i] = State.Wait;
         }
