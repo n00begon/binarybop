@@ -6,7 +6,7 @@ const maxBeat = 20;
 export class Main extends Phaser.Scene {
     beat = 0;
     keys!: Array<Phaser.Input.Keyboard.Key>;
-    letterCharacters = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K'];
+    letterCharacters = ['K', 'J', 'H', 'G', 'F', 'D', 'S', 'A']
     states = [State.Next, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait]
     music!: Phaser.Sound.BaseSound;
 
@@ -16,11 +16,11 @@ export class Main extends Phaser.Scene {
         super("main");
     }
 
-    beatwatcher:BeatManager = new BeatManager();
+    beatwatcher: BeatManager = new BeatManager();
 
     create() {
         this.sound.pauseOnBlur = false;
-        
+
         this.music = this.sound.add('bitbop');
         this.beatwatcher.setBpm(110);
         this.beatwatcher.offsetBeats = 8;
@@ -30,24 +30,28 @@ export class Main extends Phaser.Scene {
         this.beatwatcher.start();
 
         this.keys = [];
-        this.keys[0] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-        this.keys[1] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-        this.keys[2] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-        this.keys[3] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
-        this.keys[4] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G);
-        this.keys[5] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H);
-        this.keys[6] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
-        this.keys[7] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+        this.keys[0] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+        this.keys[1] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
+        this.keys[2] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H);
+        this.keys[3] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G);
+        this.keys[4] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
+        this.keys[5] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.keys[6] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.keys[7] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.createAnimations();
         this.letterSprites = [];
-        let x = 100;
-        this.letterCharacters.forEach((character) => {
-            let sprite = this.add.sprite(x, 100, 'letters');
-            sprite.setScale(0.5, 0.5);
+        let letterGap = 230;
+        let centerX = this.sys.canvas.width * .5 - letterGap/2;
+        let centerY = this.sys.canvas.height * .5;
+
+        for (let i = 0; i < this.letterCharacters.length; ++i) {
+            let character = this.letterCharacters[i];
+            let x = (i - this.letterCharacters.length/2) 
+            let sprite = this.add.sprite(centerX - x * letterGap, centerY, 'letters');
+            sprite.setScale(0.8, 0.8);
             sprite.setFrame('Y' + character + '.png');
             this.letterSprites.push(sprite);
-            x += 150;
-        });
+        };
 
         for (let i = 0; i < 8; ++i) {
             console.log(this.toString(i));
@@ -81,7 +85,7 @@ export class Main extends Phaser.Scene {
         }
 
         this.beatwatcher.update(delta);
-        
+
     }
 
     reset() {

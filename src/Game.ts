@@ -7,7 +7,7 @@ const config: GameConfig = {
     parent: "canvas",
     title: "Binary Bop",
     width: 1920,
-    height: 1080,
+    height: 900,
     backgroundColor: "#000000",
 
     scene: [
