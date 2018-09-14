@@ -6,8 +6,8 @@ const maxBeat = 20;
 export class Main extends Phaser.Scene {
     beat = 0;
     keys!: Array<Phaser.Input.Keyboard.Key>;
-    letterCharacters = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'A']; // change this to K when it's in spritesheet
-    states = [State.Next, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait]
+    letterCharacters = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K'];
+    states = [State.Next, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait]
     music!: Phaser.Sound.BaseSound;
 
     letterSprites!: Array<Phaser.GameObjects.Sprite>

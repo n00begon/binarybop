@@ -132,7 +132,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>../spritesheets/letters.json</filename>
+                <filename></filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -187,6 +187,7 @@
             <key type="filename">BG.png</key>
             <key type="filename">BH.png</key>
             <key type="filename">BJ.png</key>
+            <key type="filename">BK.png</key>
             <key type="filename">BS.png</key>
             <key type="filename">DA.png</key>
             <key type="filename">DD.png</key>
@@ -194,6 +195,7 @@
             <key type="filename">DG.png</key>
             <key type="filename">DH.png</key>
             <key type="filename">DJ.png</key>
+            <key type="filename">DK.png</key>
             <key type="filename">DS.png</key>
             <key type="filename">HA.png</key>
             <key type="filename">HD.png</key>
@@ -201,6 +203,7 @@
             <key type="filename">HG.png</key>
             <key type="filename">HH.png</key>
             <key type="filename">HJ.png</key>
+            <key type="filename">HK.png</key>
             <key type="filename">HS.png</key>
             <key type="filename">YA.png</key>
             <key type="filename">YD.png</key>
@@ -208,6 +211,7 @@
             <key type="filename">YG.png</key>
             <key type="filename">YH.png</key>
             <key type="filename">YJ.png</key>
+            <key type="filename">YK.png</key>
             <key type="filename">YS.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
@@ -230,6 +234,7 @@
             <filename>YG.png</filename>
             <filename>YH.png</filename>
             <filename>YJ.png</filename>
+            <filename>YK.png</filename>
             <filename>YS.png</filename>
             <filename>BA.png</filename>
             <filename>BD.png</filename>
@@ -237,21 +242,24 @@
             <filename>BG.png</filename>
             <filename>BH.png</filename>
             <filename>BJ.png</filename>
+            <filename>BK.png</filename>
             <filename>BS.png</filename>
-            <filename>HD.png</filename>
-            <filename>HF.png</filename>
-            <filename>HG.png</filename>
-            <filename>HH.png</filename>
-            <filename>HJ.png</filename>
-            <filename>HS.png</filename>
-            <filename>HA.png</filename>
-            <filename>DJ.png</filename>
-            <filename>DS.png</filename>
             <filename>DA.png</filename>
             <filename>DD.png</filename>
             <filename>DF.png</filename>
             <filename>DG.png</filename>
             <filename>DH.png</filename>
+            <filename>DJ.png</filename>
+            <filename>DK.png</filename>
+            <filename>DS.png</filename>
+            <filename>HA.png</filename>
+            <filename>HD.png</filename>
+            <filename>HF.png</filename>
+            <filename>HG.png</filename>
+            <filename>HH.png</filename>
+            <filename>HJ.png</filename>
+            <filename>HK.png</filename>
+            <filename>HS.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
