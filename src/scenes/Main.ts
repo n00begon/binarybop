@@ -1,8 +1,12 @@
+import { GameObjects, Scene } from "phaser";
+
+import { BeatManager } from '../BeatManager';
+
 const maxBeat = 20;
 export class Main extends Phaser.Scene {
     beat = 0;
     keys!: Array<Phaser.Input.Keyboard.Key>;
-    letterCharacters = ['A', 'S', 'D', 'F', 'G', 'H', 'J'];
+    letterCharacters = ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'A']; // change this to K when it's in spritesheet
     states = [State.Next, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait]
     music!: Phaser.Sound.BaseSound;
 
@@ -12,11 +16,19 @@ export class Main extends Phaser.Scene {
         super("main");
     }
 
+    beatwatcher:BeatManager = new BeatManager();
+
     create() {
+        this.sound.pauseOnBlur = false;
+        
         this.music = this.sound.add('bitbop');
-        if (!this.music.isPlaying) {
-            this.music.play();
-        }
+        this.beatwatcher.setBpm(110);
+        this.beatwatcher.offsetBeats = 8;
+
+        // init music
+        this.music.play();
+        this.beatwatcher.start();
+
         this.keys = [];
         this.keys[0] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keys[1] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
@@ -25,6 +37,7 @@ export class Main extends Phaser.Scene {
         this.keys[4] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.G);
         this.keys[5] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H);
         this.keys[6] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
+        this.keys[7] = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
         this.createAnimations();
         this.letterSprites = [];
         let x = 100;
@@ -45,12 +58,14 @@ export class Main extends Phaser.Scene {
         return (i >>> 0).toString(2).split('').reverse();
     }
 
-    update() {
+    update(time: number, delta: number) {
         if (this.beat === 0) {
             for (let i = 0; i < this.keys.length; ++i) {
                 if (this.keys[i].isDown) {
                     if (this.states[i] === State.Next) {
                         this.increase();
+                        const info = this.beatwatcher.getBeatInfo();
+                        console.log(info.assessment, info.nearestBeat, (info.error * 100).toFixed(1));
                     } else {
                         this.reset();
                     }
@@ -64,12 +79,16 @@ export class Main extends Phaser.Scene {
         } else {
             this.beat--;
         }
+
+        this.beatwatcher.update(delta);
+        
     }
 
     reset() {
         this.count = 0;
         this.music.stop();
         this.music.play();
+        this.beatwatcher.start();
         for (let i = 0; i < this.states.length; ++i) {
             this.states[i] = State.Wait;
         }
