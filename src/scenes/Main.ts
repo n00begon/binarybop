@@ -28,18 +28,12 @@ export class Main extends Phaser.Scene {
         best = 0;
         ending = false;
         this.sound.pauseOnBlur = false;
-        this.messageText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, 180, 'DisplayFont', 'get ready!', 128);
-        this.messageText.setX(this.sys.canvas.width * .5 - this.messageText.width / 2);
-        this.messageText.setDisplayCallback(this.textCallback);
 
-        this.scoreText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, 600, 'DisplayFont', '' + count, 200);
-        this.scoreText.setX(this.sys.canvas.width * .5 - this.scoreText.width / 2);
-        this.scoreText.setDisplayCallback(this.textCallback);
+        this.messageText = this.addText('get ready!', 180, 128);
+        this.scoreText = this.addText('' + count, 600, 200);
+        this.bestText = this.addBestText('give it a try', this.sys.canvas.height - 100, 100)
 
-        this.bestText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, this.sys.canvas.height - 100, 'DisplayFont', 'best ' + best, 100);
-        this.bestText.setX(this.sys.canvas.width * .5 - this.bestText.width / 2);
-        this.bestText.setDisplayCallback(this.bestCallback);
-        this.bestText.setTint(0xFFCC00)
+        
 
         this.music = this.sound.add('bitbop');
         this.sound.volume = 1;
@@ -159,11 +153,11 @@ export class Main extends Phaser.Scene {
                         this.reset("skipped beat!");
                         return;
                     }
-                }    
+                }
 
             }
         }
-        
+
         for (let i = 0; i < this.letterCharacters.length; ++i) {
             let character = this.letterCharacters[i];
             let frame = this.getFrame(this.states[i], character);
@@ -245,6 +239,21 @@ export class Main extends Phaser.Scene {
             });
 
         });
+    }
+
+    addText(text: string, y: number, size: number): Phaser.GameObjects.DynamicBitmapText {
+        let bitText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, y, 'DisplayFont', text, size);
+        bitText.setX(this.sys.canvas.width * .5 - bitText.width / 2);
+        bitText.setDisplayCallback(this.textCallback);
+        return bitText;
+    }
+
+    addBestText(text: string, y: number, size: number): Phaser.GameObjects.DynamicBitmapText {
+        let bitText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, y, 'DisplayFont', text, size);
+        bitText.setX(this.sys.canvas.width * .5 - bitText.width / 2);
+        bitText.setDisplayCallback(this.bestCallback);
+        bitText.setTint(0xFFCC00)
+        return bitText;
     }
 
     getFrame(state: State, character: string): string {
