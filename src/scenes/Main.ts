@@ -2,7 +2,7 @@ import { GameObjects, Scene } from "phaser";
 
 import { BeatManager } from '../BeatManager';
 
-const maxBeat = 20;
+const DEBOUNCE_TIMEOUT_MAX = 20;
 let count = 0;
 let best = 0;
 let ending = false;
@@ -138,6 +138,7 @@ export class Main extends Phaser.Scene {
         // process keypresses
         for (let i = 0; i < this.keys.length; ++i) {
             if (this.keys[i].isDown) {
+
                 if (this.states[i] === State.Next) {
                     this.updateMessageText(info.assessment);
                     if (info.success) {
@@ -148,6 +149,18 @@ export class Main extends Phaser.Scene {
                 } else {
                     this.reset("wrong key!");
                 }
+
+                // check for early beat
+                if (info.nearestBeat < expectedBeat) {
+                    if (info.nearestBeat < 0) {
+                        this.reset("wait for intro");
+                        return;
+                    } else {
+                        this.reset("skipped beat!");
+                        return;
+                    }
+                }    
+
             }
         }
         
@@ -203,7 +216,7 @@ export class Main extends Phaser.Scene {
 
     updateState() {
         this.updateScoreText();
-        this.debounceTimeout = maxBeat;
+        this.debounceTimeout = DEBOUNCE_TIMEOUT_MAX;
         let positions = this.toString(count);
         for (let i = 0; i < positions.length; ++i) {
             if (positions[i] === '0') {
