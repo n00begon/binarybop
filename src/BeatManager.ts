@@ -41,16 +41,34 @@ export class BeatManager {
         if (Math.abs(error) < 0.02) {
             assessment = "perfect";
             success = true;
+        } else if (Math.abs(error) < 0.04) {
+            assessment = "wow";
+            success = true;
         } else if (Math.abs(error) < 0.06) {
-            assessment = "awesome";
+            assessment = "terrific";
+            success = true;
+        } else if (Math.abs(error) < 0.08) {
+            assessment = "amazing";
+            success = true;
+        } else if (Math.abs(error) < 0.10) {
+            assessment = "stunning";
             success = true;
         } else if (Math.abs(error) < 0.12) {
-            assessment = "great";
+            assessment = "awesome";
+            success = true;
+        } else if (Math.abs(error) < 0.16) {
+            assessment = "super";
             success = true;
         } else if (Math.abs(error) < 0.2) {
+            assessment = "great";
+            success = true;
+        } else if (Math.abs(error) < 0.24) {
             assessment = "nice";
             success = true;
-        } else if (Math.abs(error) < 0.3) {
+        } else if (Math.abs(error) < 0.28) {
+            assessment = "cool";
+            success = true;
+        } else if (Math.abs(error) < 0.32) {
             assessment = "good";
             success = true;
         }

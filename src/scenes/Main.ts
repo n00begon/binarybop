@@ -171,7 +171,7 @@ export class Main extends Phaser.Scene {
     }
 
     increase() {
-        this.cameras.main.shake(200, 0.0015);
+        this.cameras.main.shake(150, 0.0012);
         count++;
         this.updateState();
     }
