@@ -28,15 +28,15 @@ export class Main extends Phaser.Scene {
         best = 0;
         ending = false;
         this.sound.pauseOnBlur = false;
-        this.messageText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, 180, 'Courier', 'get ready!', 128);
+        this.messageText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, 180, 'DisplayFont', 'get ready!', 128);
         this.messageText.setX(this.sys.canvas.width * .5 - this.messageText.width / 2);
         this.messageText.setDisplayCallback(this.textCallback);
 
-        this.scoreText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, 600, 'Courier', '' + count, 200);
+        this.scoreText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, 600, 'DisplayFont', '' + count, 200);
         this.scoreText.setX(this.sys.canvas.width * .5 - this.scoreText.width / 2);
         this.scoreText.setDisplayCallback(this.textCallback);
 
-        this.bestText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, this.sys.canvas.height - 100, 'Courier', 'best ' + best, 100);
+        this.bestText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, this.sys.canvas.height - 100, 'DisplayFont', 'best ' + best, 100);
         this.bestText.setX(this.sys.canvas.width * .5 - this.bestText.width / 2);
         this.bestText.setDisplayCallback(this.bestCallback);
         this.bestText.setTint(0xFFCC00)

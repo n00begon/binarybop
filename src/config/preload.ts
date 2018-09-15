@@ -45,6 +45,6 @@ export const config = {
     // fonts
     fontPath: `${assetDir}/font/`,
     fontFiles: [
-        new FontFile('Courier', 'Courier/Courier.png', 'Courier/Courier.xml')
+        new FontFile('DisplayFont', 'Fredoka.png', 'Fredoka.xml')
     ]
 }

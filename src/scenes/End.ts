@@ -15,7 +15,7 @@ export class End extends Phaser.Scene {
     }
 
     addText(text: string, y: number, size: number) {
-        let bitText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, y, 'Courier', text, size);
+        let bitText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, y, 'DisplayFont', text, size);
         bitText.setX(this.sys.canvas.width * .5 - bitText.width / 2);
         bitText.setDisplayCallback(this.textCallback);
         bitText.setTint(0xFFCC00)
