@@ -5,6 +5,7 @@ import { BeatManager } from '../BeatManager';
 const maxBeat = 20;
 let count = 0;
 let best = 0;
+let ending = false;
 export class Main extends Phaser.Scene {
     beat = 0;
     waitCount = 0;
@@ -23,6 +24,8 @@ export class Main extends Phaser.Scene {
     beatwatcher: BeatManager = new BeatManager();
     create() {
         count = 0;
+        best = 0;
+        ending = false;
         this.sound.pauseOnBlur = false;
         this.messageText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, 180, 'Courier', 'get ready!', 128);
         this.messageText.setX(this.sys.canvas.width * .5 - this.messageText.width / 2);
@@ -32,12 +35,13 @@ export class Main extends Phaser.Scene {
         this.scoreText.setX(this.sys.canvas.width * .5 - this.scoreText.width / 2);
         this.scoreText.setDisplayCallback(this.textCallback);
 
-        this.bestText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, this.sys.canvas.height- 100, 'Courier', 'best ' + best, 100);
+        this.bestText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, this.sys.canvas.height - 100, 'Courier', 'best ' + best, 100);
         this.bestText.setX(this.sys.canvas.width * .5 - this.bestText.width / 2);
         this.bestText.setDisplayCallback(this.bestCallback);
-
+        this.bestText.setTint(0xFFCC00)
 
         this.music = this.sound.add('bitbop');
+        this.sound.volume = 1;
         this.beatwatcher.setBpm(110);
         this.beatwatcher.offsetBeats = 8;
 
@@ -69,9 +73,11 @@ export class Main extends Phaser.Scene {
             this.letterSprites.push(sprite);
         };
 
-        for (let i = 0; i < 8; ++i) {
-            console.log(this.toString(i));
-        }
+        this.cameras.main.on('camerafadeoutcomplete', () => {
+            this.music.stop();
+            this.scene.start('end');
+        });
+
     };
 
     textCallback(data: DisplayCallbackConfig) {
@@ -97,42 +103,51 @@ export class Main extends Phaser.Scene {
     }
 
     update(time: number, delta: number) {
-        if (this.waitCount > 0) {
+        if (ending) {
+            if (this && this.sound) {
+                //this.sound.volume = this.sound.volume * 0.99;
+            }
+        } else if (count >= 128) {
+            ending = true;
+            this.cameras.main.fade(10000, 0, 0, 0);
+        } else if (this.waitCount > 0) {
             this.waitCount--;
             if (this.waitCount <= 0) {
                 this.restart();
             }
         } else {
-            if (count < 128) {
-                if (this.beat === 0) {
-                    for (let i = 0; i < this.keys.length; ++i) {
-                        if (this.keys[i].isDown) {
-                            if (this.states[i] === State.Next) {
-                                const info = this.beatwatcher.getBeatInfo();
-                                this.updateMessageText(info.assessment);
-                                if (info.success) {
-                                    this.increase();
-                                } else {
-                                    this.reset(info.assessment);
-                                }
-                            } else {
-                                this.reset("wrong key!");
-                            }
-                        }
-                    }
-                    for (let i = 0; i < this.letterCharacters.length; ++i) {
-                        let character = this.letterCharacters[i];
-                        let frame = this.getFrame(this.states[i], character);
-                        this.letterSprites[i].setFrame(frame);
-                    }
-                } else {
-                    this.beat--;
-                }
-
-                this.beatwatcher.update(delta);
+            if (this.beat === 0) {
+                this.processBeat();
+            } else {
+                this.beat--;
             }
+
+            this.beatwatcher.update(delta);
         }
     }
+    processBeat() {
+        for (let i = 0; i < this.keys.length; ++i) {
+            if (this.keys[i].isDown) {
+                if (this.states[i] === State.Next) {
+                    const info = this.beatwatcher.getBeatInfo();
+                    this.updateMessageText(info.assessment);
+                    if (info.success) {
+                        this.increase();
+                    } else {
+                        this.reset(info.assessment);
+                    }
+                } else {
+                    this.reset("wrong key!");
+                }
+            }
+        }
+        for (let i = 0; i < this.letterCharacters.length; ++i) {
+            let character = this.letterCharacters[i];
+            let frame = this.getFrame(this.states[i], character);
+            this.letterSprites[i].setFrame(frame);
+        }
+    }
+
 
     updateMessageText(text: string) {
         this.updateText(text, this.messageText);
@@ -171,7 +186,7 @@ export class Main extends Phaser.Scene {
     }
 
     increase() {
-        this.cameras.main.shake(150, 0.0012);
+        this.cameras.main.shake(150, 0.0014);
         count++;
         this.updateState();
     }

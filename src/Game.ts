@@ -1,6 +1,7 @@
 import "phaser";
 import { Preloader } from './scenes/Preloader';
 import { Main } from './scenes/Main';
+import { End} from './scenes/End';
 
 const config: GameConfig = {
     type: Phaser.AUTO,
@@ -13,6 +14,7 @@ const config: GameConfig = {
     scene: [
         Preloader,
         Main,
+        End,
     ]
 };
 const game = new Phaser.Game(config);
