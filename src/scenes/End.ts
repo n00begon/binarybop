@@ -8,8 +8,8 @@ export class End extends Phaser.Scene {
     create() {
         this.cameras.main.fadeIn(1000);
         this.addText('You made it to 128!', 100, 150);
-        this.addText('Binary Bop', 300, 150);
-        this.addText('Made by @n00begon and @aaaidan', 500, 100);
+        this.addText('Binary Bop', 320, 150);
+        this.addText('Made by @n00begon & @aaaidan', 500, 100);
         this.addText('Original music by @aaaidan', 600, 100);
         this.addText('Made for Music Jam 2018', 800, 60);
     }
