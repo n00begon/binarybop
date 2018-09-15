@@ -3,36 +3,39 @@ import { GameObjects, Scene } from "phaser";
 import { BeatManager } from '../BeatManager';
 
 const maxBeat = 20;
+let count = 0;
+let best = 0;
 export class Main extends Phaser.Scene {
     beat = 0;
+    waitCount = 0;
     keys!: Array<Phaser.Input.Keyboard.Key>;
     letterCharacters = ['K', 'J', 'H', 'G', 'F', 'D', 'S', 'A']
     states = [State.Next, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait]
     music!: Phaser.Sound.BaseSound;
     messageText!: GameObjects.DynamicBitmapText;
+    scoreText!: GameObjects.DynamicBitmapText;
+    bestText!: GameObjects.DynamicBitmapText;
     letterSprites!: Array<Phaser.GameObjects.Sprite>
-    count = 0;
     constructor() {
         super("main");
     }
 
     beatwatcher: BeatManager = new BeatManager();
-
     create() {
+        count = 0;
         this.sound.pauseOnBlur = false;
-        this.messageText = this.add.dynamicBitmapText(60, 180, 'Courier', 'Get Ready!', 128);
+        this.messageText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, 180, 'Courier', 'get ready!', 128);
+        this.messageText.setX(this.sys.canvas.width * .5 - this.messageText.width / 2);
         this.messageText.setDisplayCallback(this.textCallback);
 
-        // this.tweens.add({
-        //     targets:  this.messageText,
-        //     duration: 2000,
-        //     delay: 2000,
-        //     scaleX: 2,
-        //     scaleY: 2,
-        //     ease: 'Sine.easeInOut',
-        //     repeat: -1,
-        //     yoyo: true
-        // });
+        this.scoreText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, 600, 'Courier', '' + count, 200);
+        this.scoreText.setX(this.sys.canvas.width * .5 - this.scoreText.width / 2);
+        this.scoreText.setDisplayCallback(this.textCallback);
+
+        this.bestText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, this.sys.canvas.height- 100, 'Courier', 'best ' + best, 100);
+        this.bestText.setX(this.sys.canvas.width * .5 - this.bestText.width / 2);
+        this.bestText.setDisplayCallback(this.bestCallback);
+
 
         this.music = this.sound.add('bitbop');
         this.beatwatcher.setBpm(110);
@@ -54,12 +57,12 @@ export class Main extends Phaser.Scene {
         this.createAnimations();
         this.letterSprites = [];
         let letterGap = 230;
-        let centerX = this.sys.canvas.width * .5 - letterGap/2;
+        let centerX = this.sys.canvas.width * .5 - letterGap / 2;
         let centerY = this.sys.canvas.height * .5;
 
         for (let i = 0; i < this.letterCharacters.length; ++i) {
             let character = this.letterCharacters[i];
-            let x = (i - this.letterCharacters.length/2) 
+            let x = (i - this.letterCharacters.length / 2)
             let sprite = this.add.sprite(centerX - x * letterGap, centerY, 'letters');
             sprite.setScale(0.8, 0.8);
             sprite.setFrame('Y' + character + '.png');
@@ -71,11 +74,21 @@ export class Main extends Phaser.Scene {
         }
     };
 
-    textCallback (data: DisplayCallbackConfig)
-    {
-        data.x = Phaser.Math.Between(data.x - 1, data.x + 1);
-        data.y = Phaser.Math.Between(data.y - 2, data.y + 2);
-    
+    textCallback(data: DisplayCallbackConfig) {
+        let offset = count / 80;
+
+        data.x = Phaser.Math.Between(data.x - offset, data.x + offset);
+        data.y = Phaser.Math.Between(data.y - offset * 2, data.y + offset * 2);
+
+        return data;
+    }
+
+    bestCallback(data: DisplayCallbackConfig) {
+        let offset = best / 80;
+
+        data.x = Phaser.Math.Between(data.x - offset, data.x + offset);
+        data.y = Phaser.Math.Between(data.y - offset * 2, data.y + offset * 2);
+
         return data;
     }
 
@@ -84,52 +97,89 @@ export class Main extends Phaser.Scene {
     }
 
     update(time: number, delta: number) {
-        if (this.beat === 0) {
-            for (let i = 0; i < this.keys.length; ++i) {
-                if (this.keys[i].isDown) {
-                    if (this.states[i] === State.Next) {
-                        this.increase();
-                        const info = this.beatwatcher.getBeatInfo();
-                        this.messageText.setText(info.assessment);
-                        console.log(info.assessment, info.nearestBeat, (info.error * 100).toFixed(1));
-                    } else {
-                        this.reset();
-                    }
-                }
-            }
-            for (let i = 0; i < this.letterCharacters.length; ++i) {
-                let character = this.letterCharacters[i];
-                let frame = this.getFrame(this.states[i], character);
-                this.letterSprites[i].setFrame(frame);
+        if (this.waitCount > 0) {
+            this.waitCount--;
+            if (this.waitCount <= 0) {
+                this.restart();
             }
         } else {
-            this.beat--;
+            if (count < 128) {
+                if (this.beat === 0) {
+                    for (let i = 0; i < this.keys.length; ++i) {
+                        if (this.keys[i].isDown) {
+                            if (this.states[i] === State.Next) {
+                                const info = this.beatwatcher.getBeatInfo();
+                                this.updateMessageText(info.assessment);
+                                if (info.success) {
+                                    this.increase();
+                                } else {
+                                    this.reset(info.assessment);
+                                }
+                            } else {
+                                this.reset("wrong key!");
+                            }
+                        }
+                    }
+                    for (let i = 0; i < this.letterCharacters.length; ++i) {
+                        let character = this.letterCharacters[i];
+                        let frame = this.getFrame(this.states[i], character);
+                        this.letterSprites[i].setFrame(frame);
+                    }
+                } else {
+                    this.beat--;
+                }
+
+                this.beatwatcher.update(delta);
+            }
         }
-
-        this.beatwatcher.update(delta);
-
     }
 
-    reset() {
-        this.count = 0;
+    updateMessageText(text: string) {
+        this.updateText(text, this.messageText);
+    }
+
+    updateScoreText() {
+        this.updateText('' + count, this.scoreText);
+        if (best < count) {
+            best = count;
+        }
+        this.updateText('best ' + best, this.bestText);
+    }
+
+    updateText(text: string, object: GameObjects.DynamicBitmapText) {
+        object.setText(text);
+        object.setX(this.sys.canvas.width * .5 - object.width / 2);
+    }
+
+    reset(reason: string) {
+        this.cameras.main.shake(300, 0.0055);
+        count = 0;
         this.music.stop();
-        this.music.play();
-        this.beatwatcher.start();
         for (let i = 0; i < this.states.length; ++i) {
             this.states[i] = State.Wait;
         }
-        this.messageText.setText("Get Ready!");
+        this.updateMessageText(reason);
         this.updateState();
+        this.waitCount = 50;
+    }
+
+    restart() {
+        this.updateMessageText('get ready!');
+        this.updateState();
+        this.music.play();
+        this.beatwatcher.start();
     }
 
     increase() {
-        this.count++;
+        this.cameras.main.shake(200, 0.0015);
+        count++;
         this.updateState();
     }
 
     updateState() {
+        this.updateScoreText();
         this.beat = maxBeat;
-        let positions = this.toString(this.count);
+        let positions = this.toString(count);
         for (let i = 0; i < positions.length; ++i) {
             if (positions[i] === '0') {
                 this.states[i] = State.Down;

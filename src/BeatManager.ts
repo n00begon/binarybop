@@ -36,23 +36,28 @@ export class BeatManager {
         const beatTime = this.getBeatsElapsed();
         const nearestBeat = Math.round(beatTime);
         const error = beatTime - nearestBeat;
-        
+        let success = false;
         let assessment = error > 0 ? "too late" : "too early";
         if (Math.abs(error) < 0.02) {
             assessment = "perfect";
+            success = true;
         } else if (Math.abs(error) < 0.06) {
             assessment = "awesome";
+            success = true;
         } else  if (Math.abs(error) < 0.12) {
             assessment = "great";
-        }  else  if (Math.abs(error) < 0.2) {
+            success = true;
+        }  else  if (Math.abs(error) < 0.22) {
             assessment = "good";
+            success = true;
         } 
 
         return {
             beatTime,
             nearestBeat,
             error,
-            assessment
+            assessment,
+            success
         }
     }
 }
@@ -70,4 +75,9 @@ export interface BeatInfo {
      * An machine value for feedback that can be delivered to the player.
      */
     assessment: string
+
+    /**
+     * Whether the press was successful
+     */
+    success: boolean
 }
