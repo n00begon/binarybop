@@ -2,12 +2,12 @@ import { GameObjects, Scene } from "phaser";
 
 import { BeatManager } from '../BeatManager';
 
-const maxBeat = 20;
+const DEBOUNCE_TIMEOUT_MAX = 20;
 let count = 0;
 let best = 0;
 let ending = false;
 export class Main extends Phaser.Scene {
-    beat = 0;
+    debounceTimeout = 0;
     waitCount = 0;
     keys!: Array<Phaser.Input.Keyboard.Key>;
     letterCharacters = ['K', 'J', 'H', 'G', 'F', 'D', 'S', 'A']
@@ -22,6 +22,7 @@ export class Main extends Phaser.Scene {
     }
 
     beatwatcher: BeatManager = new BeatManager();
+
     create() {
         count = 0;
         best = 0;
@@ -116,20 +117,29 @@ export class Main extends Phaser.Scene {
                 this.restart();
             }
         } else {
-            if (this.beat === 0) {
+            if (this.debounceTimeout === 0) {
                 this.processBeat();
             } else {
-                this.beat--;
+                this.debounceTimeout--;
             }
 
             this.beatwatcher.update(delta);
         }
     }
     processBeat() {
+        const info = this.beatwatcher.getBeatInfo();
+
+        // check for missed beat
+        const expectedBeat = count;
+        if (info.nearestBeat > expectedBeat) {
+            this.reset("missed beat!");
+        }
+
+        // process keypresses
         for (let i = 0; i < this.keys.length; ++i) {
             if (this.keys[i].isDown) {
+
                 if (this.states[i] === State.Next) {
-                    const info = this.beatwatcher.getBeatInfo();
                     this.updateMessageText(info.assessment);
                     if (info.success) {
                         this.increase();
@@ -139,8 +149,21 @@ export class Main extends Phaser.Scene {
                 } else {
                     this.reset("wrong key!");
                 }
+
+                // check for early beat
+                if (info.nearestBeat < expectedBeat) {
+                    if (info.nearestBeat < 0) {
+                        this.reset("wait for intro");
+                        return;
+                    } else {
+                        this.reset("skipped beat!");
+                        return;
+                    }
+                }    
+
             }
         }
+        
         for (let i = 0; i < this.letterCharacters.length; ++i) {
             let character = this.letterCharacters[i];
             let frame = this.getFrame(this.states[i], character);
@@ -193,7 +216,7 @@ export class Main extends Phaser.Scene {
 
     updateState() {
         this.updateScoreText();
-        this.beat = maxBeat;
+        this.debounceTimeout = DEBOUNCE_TIMEOUT_MAX;
         let positions = this.toString(count);
         for (let i = 0; i < positions.length; ++i) {
             if (positions[i] === '0') {
