@@ -14,11 +14,12 @@ export class End extends Phaser.Scene {
         this.addText('Made for Music Jam 2018', 800, 60);
     }
 
-    addText(text: string, y: number, size: number) {
+    addText(text: string, y: number, size: number): Phaser.GameObjects.DynamicBitmapText {
         let bitText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, y, 'DisplayFont', text, size);
         bitText.setX(this.sys.canvas.width * .5 - bitText.width / 2);
         bitText.setDisplayCallback(this.textCallback);
         bitText.setTint(0xFFCC00)
+        return bitText;
     }
 
     textCallback(data: DisplayCallbackConfig) {

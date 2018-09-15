@@ -43,6 +43,7 @@ export class Preloader extends Phaser.Scene {
 
     create() {
         this.key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.addText('hit space to start!', this.sys.canvas.height - 128, 128);
     }
 
     update() {
@@ -82,5 +83,22 @@ export class Preloader extends Phaser.Scene {
         for (let i = 0; i < fontFiles.length; i++) {
             this.load.bitmapFont(fontFiles[i].key, fontFiles[i].png, fontFiles[i].xml);
         }
+    }
+
+    textCallback(data: DisplayCallbackConfig) {
+        let offset = 0.3;
+
+        data.x = Phaser.Math.Between(data.x - offset, data.x + offset);
+        data.y = Phaser.Math.Between(data.y - offset * 2, data.y + offset * 2);
+
+        return data;
+    }
+
+    addText(text: string, y: number, size: number): Phaser.GameObjects.DynamicBitmapText {
+        let bitText = this.add.dynamicBitmapText(this.sys.canvas.width * .5, y, 'DisplayFont', text, size);
+        bitText.setX(this.sys.canvas.width * .5 - bitText.width / 2);
+        bitText.setDisplayCallback(this.textCallback);
+        bitText.setTint(0xFFCC00)
+        return bitText;
     }
 }
