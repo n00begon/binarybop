@@ -1,6 +1,9 @@
 import { config } from '../config/preload';
 
 export class Preloader extends Phaser.Scene {
+
+    key!: Phaser.Input.Keyboard.Key
+
     constructor() {
         super({
             key: 'preloader',
@@ -17,7 +20,7 @@ export class Preloader extends Phaser.Scene {
         // add the loading bar to use as a display for the loading progress of the remainder of the assets
         const barBg = this.add.image(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'barBg');
         const bar = this.add.sprite(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'bar');
-        
+
         const mask = this.make.graphics({
             x: bar.x - (bar.width / 2),
             y: bar.y - (bar.height / 2),
@@ -26,7 +29,7 @@ export class Preloader extends Phaser.Scene {
         mask.fillRect(0, 0, 0, bar.height);
 
         bar.mask = new Phaser.Display.Masks.GeometryMask(this, mask);
-        
+
         this.load.on('progress', (progress: number) => {
             mask.clear();
             mask.fillRect(0, 0, bar.width * progress, bar.height);
@@ -39,7 +42,13 @@ export class Preloader extends Phaser.Scene {
     }
 
     create() {
-        this.scene.start('main');
+        this.key = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    }
+
+    update() {
+        if (this.key.isDown) {
+            this.scene.start('main');
+        }
     }
 
     loadAtlas() {
