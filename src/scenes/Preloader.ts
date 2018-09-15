@@ -17,7 +17,7 @@ export class Preloader extends Phaser.Scene {
         // add the loading bar to use as a display for the loading progress of the remainder of the assets
         const barBg = this.add.image(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'barBg');
         const bar = this.add.sprite(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'bar');
-
+        
         const mask = this.make.graphics({
             x: bar.x - (bar.width / 2),
             y: bar.y - (bar.height / 2),
@@ -35,6 +35,7 @@ export class Preloader extends Phaser.Scene {
         // load assets declared in the preload config
         this.loadAtlas();
         this.loadAudio();
+        this.loadFont();
     }
 
     create() {
@@ -60,6 +61,17 @@ export class Preloader extends Phaser.Scene {
 
         for (let i = 0; i < audioFiles.length; i++) {
             this.load.audio(audioFiles[i].key, audioFiles[i].mp3);
+        }
+    }
+
+    loadFont() {
+        const fontPath = config.fontPath;
+        const fontFiles = config.fontFiles;
+
+        this.load.setPath(fontPath);
+
+        for (let i = 0; i < fontFiles.length; i++) {
+            this.load.bitmapFont(fontFiles[i].key, fontFiles[i].png, fontFiles[i].xml);
         }
     }
 }

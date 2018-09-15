@@ -9,7 +9,7 @@ export class Main extends Phaser.Scene {
     letterCharacters = ['K', 'J', 'H', 'G', 'F', 'D', 'S', 'A']
     states = [State.Next, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait, State.Wait]
     music!: Phaser.Sound.BaseSound;
-
+    messageText!: GameObjects.DynamicBitmapText;
     letterSprites!: Array<Phaser.GameObjects.Sprite>
     count = 0;
     constructor() {
@@ -20,6 +20,19 @@ export class Main extends Phaser.Scene {
 
     create() {
         this.sound.pauseOnBlur = false;
+        this.messageText = this.add.dynamicBitmapText(60, 180, 'Courier', 'Get Ready!', 128);
+        this.messageText.setDisplayCallback(this.textCallback);
+
+        // this.tweens.add({
+        //     targets:  this.messageText,
+        //     duration: 2000,
+        //     delay: 2000,
+        //     scaleX: 2,
+        //     scaleY: 2,
+        //     ease: 'Sine.easeInOut',
+        //     repeat: -1,
+        //     yoyo: true
+        // });
 
         this.music = this.sound.add('bitbop');
         this.beatwatcher.setBpm(110);
@@ -58,6 +71,14 @@ export class Main extends Phaser.Scene {
         }
     };
 
+    textCallback (data: DisplayCallbackConfig)
+    {
+        data.x = Phaser.Math.Between(data.x - 1, data.x + 1);
+        data.y = Phaser.Math.Between(data.y - 2, data.y + 2);
+    
+        return data;
+    }
+
     toString(i: number): Array<string> {
         return (i >>> 0).toString(2).split('').reverse();
     }
@@ -69,6 +90,7 @@ export class Main extends Phaser.Scene {
                     if (this.states[i] === State.Next) {
                         this.increase();
                         const info = this.beatwatcher.getBeatInfo();
+                        this.messageText.setText(info.assessment);
                         console.log(info.assessment, info.nearestBeat, (info.error * 100).toFixed(1));
                     } else {
                         this.reset();
@@ -96,7 +118,7 @@ export class Main extends Phaser.Scene {
         for (let i = 0; i < this.states.length; ++i) {
             this.states[i] = State.Wait;
         }
-
+        this.messageText.setText("Get Ready!");
         this.updateState();
     }
 

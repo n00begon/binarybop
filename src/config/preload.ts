@@ -14,6 +14,19 @@ export class AudioFile {
     mp3: string;
 }
 
+export class FontFile {
+    constructor(key: string, png: string, xml: string) {
+        this.key = key;
+        this.png = png;
+        this.xml = xml;
+    }
+
+    key: string;
+    png: string;
+    xml: string;
+}
+
+
 const assetDir = "./assets"; // relative to build dir
 
 export const config = {
@@ -27,5 +40,11 @@ export const config = {
     audioPath: `${assetDir}/audio/`,
     audioFiles: [
         new AudioFile('bitbop', 'bitbop.mp3')
+    ],
+
+    // fonts
+    fontPath: `${assetDir}/font/`,
+    fontFiles: [
+        new FontFile('Courier', 'Courier/Courier.png', 'Courier/Courier.xml')
     ]
 }

@@ -37,12 +37,14 @@ export class BeatManager {
         const nearestBeat = Math.round(beatTime);
         const error = beatTime - nearestBeat;
         
-        let assessment = error > 0 ? "late" : "early";
+        let assessment = error > 0 ? "too late" : "too early";
         if (Math.abs(error) < 0.02) {
             assessment = "perfect";
-        } else if (Math.abs(error) < 0.04) {
+        } else if (Math.abs(error) < 0.06) {
+            assessment = "awesome";
+        } else  if (Math.abs(error) < 0.12) {
             assessment = "great";
-        } else  if (Math.abs(error) < 0.06) {
+        }  else  if (Math.abs(error) < 0.2) {
             assessment = "good";
         } 
 
