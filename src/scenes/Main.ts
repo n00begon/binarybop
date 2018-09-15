@@ -129,6 +129,10 @@ export class Main extends Phaser.Scene {
             this.reset("missed beat!");
         }
 
+        if (info.beatTime < 0 && info.beatTime > -4) {
+            this.updateMessageText( (5 + Math.floor(info.beatTime)).toString() );
+        }
+
         // process keypresses
         for (let i = 0; i < this.keys.length; ++i) {
             if (this.keys[i].isDown) {
