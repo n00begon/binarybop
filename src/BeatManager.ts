@@ -2,37 +2,37 @@
  * Tracks game time and turns it into beat information.
  */
 export class BeatManager {
-    static bpmToBeatDurationMillis(bpm:number):number {
+    static bpmToBeatDurationMillis(bpm: number): number {
         const beatsPerSecond = bpm / 60;
         const beatsPerMillisecond = beatsPerSecond / 1000;
         const millisecondsPerBeat = 1 / beatsPerMillisecond;
         return millisecondsPerBeat;
     }
 
-    currentTime:number = 0 // milliseconds
-    millisecondsPerBeat:number = BeatManager.bpmToBeatDurationMillis(120)
-    offsetBeats:number = 0; // number of beats before the start of the song
+    currentTime: number = 0 // milliseconds
+    millisecondsPerBeat: number = BeatManager.bpmToBeatDurationMillis(120)
+    offsetBeats: number = 0; // number of beats before the start of the song
 
     start() {
         this.currentTime = 0;
     }
-    setBpm(bpm:number) {
+    setBpm(bpm: number) {
         this.millisecondsPerBeat = BeatManager.bpmToBeatDurationMillis(bpm);
     }
-    update(delta:number) {
+    update(delta: number) {
         this.currentTime += delta;
     }
     /**
      * @returns Floating point number of beats elapsed since start, 0-indexed.
      */
-    getBeatsElapsed():number {
+    getBeatsElapsed(): number {
         return (this.currentTime) / this.millisecondsPerBeat - this.offsetBeats;
     }
 
     /**
      * @returns Detailed information about the current time as it relates to the beat.
      */
-    getBeatInfo():BeatInfo {
+    getBeatInfo(): BeatInfo {
         const beatTime = this.getBeatsElapsed();
         const nearestBeat = Math.round(beatTime);
         const error = beatTime - nearestBeat;
@@ -44,13 +44,16 @@ export class BeatManager {
         } else if (Math.abs(error) < 0.06) {
             assessment = "awesome";
             success = true;
-        } else  if (Math.abs(error) < 0.12) {
+        } else if (Math.abs(error) < 0.12) {
             assessment = "great";
             success = true;
-        }  else  if (Math.abs(error) < 0.22) {
+        } else if (Math.abs(error) < 0.2) {
+            assessment = "nice";
+            success = true;
+        } else if (Math.abs(error) < 0.3) {
             assessment = "good";
             success = true;
-        } 
+        }
 
         return {
             beatTime,
@@ -63,13 +66,13 @@ export class BeatManager {
 }
 
 export interface BeatInfo {
-    beatTime:number
-    nearestBeat:integer
-    
+    beatTime: number
+    nearestBeat: integer
+
     /** How far "off the mark" this time is compared to the nearest beat, as a proportion of a beat.
       * Negative for early, positive for late.
       */
-    error:number
+    error: number
 
     /**
      * An machine value for feedback that can be delivered to the player.
